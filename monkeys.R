@@ -4,7 +4,7 @@ library(tidyverse)
 library(rtweet)
 library(reshape2)
 library(ggplot2)
-
+library(textmineR)
 Data.science <- search_tweets(
   q = "monkey", # search for Tweets with "data" AND "science",
   n = 2000 
@@ -42,7 +42,8 @@ corpus_sotu_proc <-  tokens_replace(corpus_sotu_proc, # "Substitute token types 
 
 corpus_sotu_proc <- corpus_sotu_proc %>%
   tokens_remove(stopwords("english")) %>%
-  tokens_ngrams(1) 
+  tokens_ngrams(1)# we chose to broke sentences into one word because with two 
+# the words does not have information (unigram
 
 DTM <- dfm(corpus_sotu_proc)
 
@@ -68,23 +69,39 @@ sel_idx <- rowSums(DTM) > 0
 DTM <- DTM[sel_idx, ]
 textdata <- data[sel_idx, ]
 
-#afjust k dependind on the lda model
-K <- 20
+model <- FitLdaModel(dtm = DTM,
+                     k = 20,
+                     iterations = 200, # I usually recommend at least 500 iterations or more
+                     burnin = 180,
+                     alpha = 0.1,
+                     beta = 0.05,
+                     optimize_alpha = TRUE,
+                     calc_likelihood = TRUE,
+                     calc_coherence = TRUE,
+                     calc_r2 = TRUE,
+                     cpus = 2)
+model$r2
+plot(model$log_likelihood, type = "l")
+abline(v=10)
+#Adjust k dependind on the lda model
+K <- 10
 
 topicModel <- LDA(DTM, 
                   K, 
                   method="Gibbs", 
                   control=list(iter = 500, 
                                verbose = 25))
-tmResult <- posterior(topicModel)
+tmResult <- modeltools::posterior(topicModel)
 beta <- tmResult$terms
-glimpse(beta)   
+
 theta <- tmResult$topics
-glimpse(theta)  
-terms(topicModel, 10)
+
+#terms(topicModel, 10)
 top5termsPerTopic <- terms(topicModel, 
                            5)
-# For the next steps, we want to give the topics more descriptive names than just numbers. Therefore, we simply concatenate the five most likely terms of each topic to a string that represents a pseudo-name for each topic.
+# For the next steps, we want to give the topics more descriptive names 
+#than just numbers. Therefore, we simply concatenate the five most likely
+#terms of each topic to a string that represents a pseudo-name for each topic.
 topicNames <- apply(top5termsPerTopic, 
                     2, 
                     paste, 
@@ -100,10 +117,9 @@ topicModel2 <- LDA(DTM,
                                 verbose = 25, 
                                 alpha = 0.2))#replace alpha
 
-tmResult <- posterior(topicModel2)
+tmResult <- modeltools::posterior(topicModel2)
 theta <- tmResult$topics
 beta <- tmResult$terms
-
 
 topicProportions <- colSums(theta) / nrow(DTM)  # average probability over all paragraphs
 names(topicProportions) <- topicNames     # Topic Names 
