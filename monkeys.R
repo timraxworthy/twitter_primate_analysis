@@ -68,7 +68,7 @@ sel_idx <- rowSums(DTM) > 0
 DTM <- DTM[sel_idx, ]
 textdata <- data[sel_idx, ]
 
-#afjust k dependind on the lda model
+#adjust k dependind on the lda model
 K <- 20
 
 topicModel <- LDA(DTM, 
