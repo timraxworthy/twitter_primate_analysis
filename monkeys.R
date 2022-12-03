@@ -1,13 +1,19 @@
 library(quanteda)
 library(topicmodels)
 library(tidyverse)
+library(tm)
+library(SnowballC)
+library(wordcloud)
 library(rtweet)
 library(reshape2)
 library(ggplot2)
 library(textmineR)
+library(ggwordcloud)
+
+
 Data.science <- search_tweets(
   q = "monkey", # search for Tweets with "data" AND "science",
-  n = 2000 
+  n = 4000 
 )
 # lets have a look at the dataframe
 data = Data.science %>% 
@@ -69,7 +75,6 @@ sel_idx <- rowSums(DTM) > 0
 DTM <- DTM[sel_idx, ]
 textdata <- data[sel_idx, ]
 
-<<<<<<< HEAD
 model <- FitLdaModel(dtm = DTM,
                      k = 20,
                      iterations = 200, # I usually recommend at least 500 iterations or more
@@ -82,14 +87,15 @@ model <- FitLdaModel(dtm = DTM,
                      calc_r2 = TRUE,
                      cpus = 2)
 model$r2
-plot(model$log_likelihood, type = "l")
-abline(v=10)
+
+model2=as.data.frame(model$log_likelihood)
+ggplot(model2,aes(x=iteration,y=log_likelihood))+
+  geom_line()+
+  geom_vline(xintercept = 10, col="red")+
+  labs(title = "k = 10")
+
 #Adjust k dependind on the lda model
 K <- 10
-=======
-#adjust k dependind on the lda model
-K <- 20
->>>>>>> 74426bb6f5b5d59a1c8f50cc2f97b6e917b6d2ef
 
 topicModel <- LDA(DTM, 
                   K, 
@@ -153,3 +159,27 @@ ggplot(data = vizDataFrame,
   coord_flip() +
   facet_wrap(~ document, 
              ncol = N)
+
+cloud =lemmaData %>% 
+  group_by(V2) %>% 
+  mutate(freq=n()) %>% 
+  distinct(freq,V2) %>% 
+  filter(freq<40) %>% 
+  arrange(desc(freq))
+
+cloud = cloud[1:100,]
+len = data.frame(unique(lemmaData$V2))  
+
+wordcloud(words = cloud$V2, freq = cloud$freq, min.freq = 1,
+          max.words=200, random.order=TRUE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+
+ggplot(cloud, aes(label = V2)) +
+  geom_text_wordcloud() +
+  theme_minimal() 
+
+
+ggplot(cloud, aes(label = V2, size = freq)) +
+  geom_text_wordcloud() +
+  theme_minimal()
