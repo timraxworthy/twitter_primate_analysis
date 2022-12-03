@@ -21,6 +21,8 @@ data = Data.science %>%
   mutate(doc_id=seq(n())) %>% 
   data.frame()
 
+write.csv(data,file = "tweet.csv")
+
 corpus_sotu_orig <- corpus(data, 
                            docid_field = "doc_id",
                            text_field = "full_text")
