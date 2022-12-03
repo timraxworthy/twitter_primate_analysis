@@ -69,6 +69,7 @@ sel_idx <- rowSums(DTM) > 0
 DTM <- DTM[sel_idx, ]
 textdata <- data[sel_idx, ]
 
+<<<<<<< HEAD
 model <- FitLdaModel(dtm = DTM,
                      k = 20,
                      iterations = 200, # I usually recommend at least 500 iterations or more
@@ -85,6 +86,10 @@ plot(model$log_likelihood, type = "l")
 abline(v=10)
 #Adjust k dependind on the lda model
 K <- 10
+=======
+#adjust k dependind on the lda model
+K <- 20
+>>>>>>> 74426bb6f5b5d59a1c8f50cc2f97b6e917b6d2ef
 
 topicModel <- LDA(DTM, 
                   K, 
