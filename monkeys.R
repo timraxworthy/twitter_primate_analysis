@@ -16,14 +16,13 @@ Data.science <- search_tweets(
   n = 4000 
 )
 # lets have a look at the dataframe
-data = Data.science %>% 
-  select(full_text) %>% 
-  mutate(doc_id=seq(n())) %>% 
-  data.frame()
-
-write.csv(data,file = "tweet.csv")
-
-corpus_sotu_orig <- corpus(data, 
+# data = Data.science %>% 
+#   select(full_text) %>% 
+#   mutate(doc_id=seq(n())) %>% 
+#   data.frame()
+#write.csv(data,file = "tweet.csv")
+data <- read.csv(file = "tweet.csv")
+ corpus_sotu_orig <- corpus(data, 
                            docid_field = "doc_id",
                            text_field = "full_text")
 
