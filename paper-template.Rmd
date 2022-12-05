@@ -1,0 +1,100 @@
+---
+title: "Fundamentals of Computing and Data Display"
+subtitle: "Term paper template"
+author: "Tim Raxworthy & Carlos Cristiano"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: yes
+    df_print: kable
+references:
+- id: Marshall2016
+  title: Why conserve primates? In An Introduction to Primate Conservation
+  author:
+  - family: Marshall
+    given: Andrew J.
+  - family: Wich
+    given: Serge A.
+  page: 13-29
+  type: book
+  container-title: Oxford Academic
+  issued:
+    year: 2016
+  
+  - id: Estrada2017
+  title: Impending extinction crisis of the world’s primates`:` Why primates matter
+  author:
+  - family: Estrada
+    given: Alejandro
+  - family: et al.
+  container-title: Science Advances
+  issued:
+    year: 2017
+---
+
+```{r, include = FALSE}
+library(knitr)
+library(tidyverse)
+```
+
+## Introduction
+
+There are many factors that impact people’s decision making processes. Much is unknown as to how people formulate their decisions when choosing support for different conservation organizations that portray themselves to be following a mission statement agreeable to their own beliefs. One major question is, “Why do people select certain organizations over others to donate money to, participate in events, subscribe to newsletters, and read their online articles? Primates other than humans are a particularly important species for measuring concepts normally overlooked as having impact in how people formulate their support for organizations. Many conservation, biological and evolutionary scientists are keen on the acute impact that primates have on human society, their importance and their role in our society’s understanding of evolutionary concepts but what is not known is how current human interests surrounding primates could be influencing (directly or indirectly) our own way of designing conservation organizations. 
+
+This research aims at gaining some insight into how people view primates on social media. To do this we will be exploring and analyzing twitter data to create different topics related to our search terms (monkey, ape, chimp, primate etc.). This information will then be interpreted within the framework of what aspects of organizations that interact with primate species are "valued" or "normally expected" over others, although we are not comparing different organizations but rather different aspects surrounding a respondents current interest towards primate species. We will also compare if any of the "primate values" outlined in [@Marshall2016] overlap with the topics that our LDR model generates. 
+
+
+The fate of primate conservation has much do with human intervention whether that be positive or negative. Examining human interpretation of primates will be vital for those designing conservation projects currently and into the future. Primate conservation is valuable to humans for many different reasons, but a significant overarching reason is that primates are more similar to us than other orders of organisms on Earth. This similarity gives insight into our own species that no other animal can. It has been found that primates are excellent model animals for understanding physical and psychological illnesses that ail humans [@Estrada2017]. Primates also possess similar cognitive abilities to humans and some captive chimpanzees have displayed a working memory that rivals that of humans (Inoue, 2007). Chimpanzees use of tools could imply that they have an understanding of causation and posses exceptional problem solving skills (Whiter, 2011). These features demonstrate some of the similarities that other primate species share with humans. This study is an exploration into what kinds of public support for primate conservation are being discussed on internet forums such as twitter. To determine this, we are building a topic model that can help distinguish and categorize these different discussions, quantifying which ones are happening at the highest frequency across tweets.
+
+
+## Data
+
+This section describes the data sources and the data gathering process.
+
+```{r}
+# A code chunk that exemplifies the data gathering process
+```
+
+```{r, include = FALSE}
+# Additional code chunks that repeat tasks or do basic things can be hidden
+```
+
+## Results
+
+This section presents the main results.
+
+### Data exploration
+
+The results section may have a data exploration part, but in general the structure here depends on the specific project.
+
+```{r}
+# What happens here depends on the specific project
+```
+
+```{r}
+# What happens here depends on the specific project
+```
+
+### Analysis
+
+This section presents the main results, such as (for example) stats and graphs that show relationships, model results and/or clustering, PCA, etc.
+
+```{r}
+# What happens here depends on the specific project
+```
+
+```{r}
+# What happens here depends on the specific project
+```
+
+```{r}
+# What happens here depends on the specific project
+```
+
+## Discussion
+
+This section summarizes the results and may briefly outline advantages and limitations of the work presented.
+
+## References
+
+
