@@ -16,13 +16,13 @@ Data.science <- search_tweets(
   n = 4000 
 )
 # lets have a look at the dataframe
-# data = Data.science %>% 
-#   select(full_text) %>% 
-#   mutate(doc_id=seq(n())) %>% 
-#   data.frame()
+data = Data.science %>%
+  select(full_text) %>%
+  mutate(doc_id=seq(n())) %>%
+  data.frame()
 #write.csv(data,file = "tweet.csv")
-data <- read.csv(file = "tweet.csv")
- corpus_sotu_orig <- corpus(data, 
+#data <- read.csv(file = "tweet.csv")
+corpus_sotu_orig <- corpus(data, 
                            docid_field = "doc_id",
                            text_field = "full_text")
 
@@ -169,7 +169,6 @@ cloud =lemmaData %>%
   arrange(desc(freq))
 
 cloud = cloud[1:100,]
-len = data.frame(unique(lemmaData$V2))  
 
 wordcloud(words = cloud$V2, freq = cloud$freq, min.freq = 1,
           max.words=200, random.order=TRUE, rot.per=0.35, 

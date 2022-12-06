@@ -35,6 +35,7 @@ references:
     year: 2017
 ---
 
+
 ```{r, include = FALSE}
 library(knitr)
 library(tidyverse)
@@ -62,8 +63,7 @@ The fate of primate conservation has much do with human intervention whether tha
 
 
 ## Data
-
-This section describes the data sources and the data gathering process.
+The data set is extracted from the social media Twitter through the function search_tweets from the package rtweet and then saved as a data frame object. The sample size for this study corresponds to four thousand tweets; the hashtag monkey was chosen as the query to be searched and used to filter and select tweets for this study.
 
 ```{r}
 Data.science <- search_tweets(
@@ -74,14 +74,24 @@ data = Data.science %>%
   select(full_text) %>%
   mutate(doc_id=seq(n())) %>%
   data.frame()
+summary(data)
+```
+For this study, we generated a corpus to make the Document Term Matrix needed for the model analysis. For this, we make a Pre-processing of the dataset in the following way:
 
+1. We converted the text to lowercase as a Word replacement and dropped Punctuation and a non-alphanumeric character.
+2.  We drop commonly used words, such as ‘the’, ‘is’, ‘that’, ‘a’, etc., that would completely dominate our analysis but don’t offer much insight into the text of the tweets.
+3. We split the tweeter text up into individual words as tokens.
+4. We identify the end bits of words that can be chopped off to leave the core root of the word. This process is called Stematization.
+Lemmatisation in linguistics is the process of grouping together the inflected forms of a word so they can be analysed as a single item, identified by the word's lemma, or dictionary form.
+5. We grouped together the inflected forms of a word so they can be analysed as a single item, identified by the word's lemma, or dictionary form.
+
+```{r, warning=FALSE}
 corpus_sotu_orig <- corpus(data, 
                            docid_field = "doc_id",
                            text_field = "full_text")
-
 corpus_sotu_proc <- tokens(corpus_sotu_orig, 
-                           remove_punct = TRUE, # remove punctuation
-                           remove_numbers = TRUE, # remove numbers
+                           remove_punct = TRUE, 
+                           remove_numbers = TRUE, 
                            remove_symbols = TRUE) %>% 
   tokens_tolower() 
 lemmaData <- read.csv2("baseform_en.tsv",
@@ -89,7 +99,6 @@ lemmaData <- read.csv2("baseform_en.tsv",
                        header=FALSE, 
                        encoding = "UTF-8", 
                        stringsAsFactors = F)
-
 lemmaData = lemmaData %>% 
   filter(!is.na(V1))
 cloud =lemmaData %>% 
@@ -98,14 +107,10 @@ cloud =lemmaData %>%
   distinct(freq,V2) %>% 
   filter(freq<40) %>% 
   arrange(desc(freq))
-
-cloud = cloud[1:100,]
-
+cloud = cloud[1:200,]
 wordcloud(words = cloud$V2, freq = cloud$freq, min.freq = 1,
           max.words=200, random.order=TRUE, rot.per=0.35, 
           colors=brewer.pal(8, "Dark2"))
-
-
 ```
 
 ## Results
@@ -116,7 +121,7 @@ This section presents the main results.
 
 The results section may have a data exploration part, but in general the structure here depends on the specific project.
 
-```{r}
+```{r, warning=FALSE}
 corpus_sotu_proc <-  tokens_replace(corpus_sotu_proc, 
                                     lemmaData$V1, 
                                     lemmaData$V2,
