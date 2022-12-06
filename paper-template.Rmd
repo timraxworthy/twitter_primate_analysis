@@ -121,6 +121,16 @@ This section presents the main results.
 
 The results section may have a data exploration part, but in general the structure here depends on the specific project.
 
+
+
+```{r}
+# What happens here depends on the specific project
+```
+
+### Analysis
+
+This section presents the main results, such as (for example) stats and graphs that show relationships, model results and/or clustering, PCA, etc.
+
 ```{r, warning=FALSE}
 corpus_sotu_proc <-  tokens_replace(corpus_sotu_proc, 
                                     lemmaData$V1, 
@@ -229,18 +239,6 @@ ggplot(data = vizDataFrame,
   facet_wrap(~ document, 
              ncol = N)
 
-```
-
-```{r}
-# What happens here depends on the specific project
-```
-
-### Analysis
-
-This section presents the main results, such as (for example) stats and graphs that show relationships, model results and/or clustering, PCA, etc.
-
-```{r}
-# What happens here depends on the specific project
 ```
 
 ```{r}
