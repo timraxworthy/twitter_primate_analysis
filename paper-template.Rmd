@@ -63,27 +63,34 @@ The fate of primate conservation has much do with human intervention whether tha
 
 
 ## Data
-The data set is extracted from the social media Twitter through the function search_tweets from the package rtweet and then saved as a data frame object. The sample size for this study corresponds to four thousand tweets; the hashtag monkey was chosen as the query to be searched and used to filter and select tweets for this study.
+The data set is extracted from the social media Twitter through the function search_tweets from the package rtweet and then saved as a data frame object. The sample size for this study corresponds to four thousand tweets; the hashtag monkey was chosen as the query to be searched and used to filter and select tweets for this study. The last parameter considered for this sample is the language of the tweets, for this study we just consider tweets in english.
 
 ```{r}
-Data.science <- search_tweets(
-  q = "monkey", # search for Tweets with "data" AND "science",
-  n = 4000 
-)
-data = Data.science %>%
-  select(full_text) %>%
-  mutate(doc_id=seq(n())) %>%
-  data.frame()
+ Data.science <- search_tweets(
+   q = "monkey", # search for Tweets with "data" AND "science",
+   n = 1000 ,
+   lang = "en"
+ )
+# data = Data.science %>%
+#   select(full_text) %>%
+#   mutate(doc_id=seq(n())) %>%
+#   data.frame()
+data <- read.csv(file = "tweet.csv")
 summary(data)
 ```
+
+## Results
+
+This section presents the main results.
+
+### Data exploration
+
 For this study, we generated a corpus to make the Document Term Matrix needed for the model analysis. For this, we make a Pre-processing of the dataset in the following way:
 
-1. We converted the text to lowercase as a Word replacement and dropped Punctuation and a non-alphanumeric character.
-2.  We drop commonly used words, such as ‘the’, ‘is’, ‘that’, ‘a’, etc., that would completely dominate our analysis but don’t offer much insight into the text of the tweets.
-3. We split the tweeter text up into individual words as tokens.
-4. We identify the end bits of words that can be chopped off to leave the core root of the word. This process is called Stematization.
-Lemmatisation in linguistics is the process of grouping together the inflected forms of a word so they can be analysed as a single item, identified by the word's lemma, or dictionary form.
-5. We grouped together the inflected forms of a word so they can be analysed as a single item, identified by the word's lemma, or dictionary form.
+1. We converted the text to lowercase as a Word replacement and dropped Punctuation and a non-alphanumeric character. This cleaning is made with the function tokens, where we use the parameters: remove_punct, remove_numbers, and remove_symbols equal TRUE.
+2.  We drop commonly used words, such as ‘the’, ‘is’, ‘that’, ‘a’, etc., that would completely dominate our analysis but don’t offer much insight into the text of the tweets. The cleaning is made wiht the function tokens_remove, as 
+3. We split the tweeter text up into individual words as tokens. This is also done with the function tokens.
+4. We grouped together the inflected forms of a word so they can be analysed as a single item, identified by the word's lemma, or dictionary form. To do the lematization we use baseform_en.tsv file, which provides the lemma of the words.
 
 ```{r, warning=FALSE}
 corpus_sotu_orig <- corpus(data, 
@@ -101,6 +108,15 @@ lemmaData <- read.csv2("baseform_en.tsv",
                        stringsAsFactors = F)
 lemmaData = lemmaData %>% 
   filter(!is.na(V1))
+corpus_sotu_proc <-  tokens_replace(corpus_sotu_proc, 
+                                    lemmaData$V1, 
+                                    lemmaData$V2,
+                                    valuetype = "fixed") 
+
+corpus_sotu_proc <- corpus_sotu_proc %>%
+  tokens_remove(stopwords("english")) %>%
+  tokens_ngrams(1)
+
 cloud =lemmaData %>% 
   group_by(V2) %>% 
   mutate(freq=n()) %>% 
@@ -113,33 +129,10 @@ wordcloud(words = cloud$V2, freq = cloud$freq, min.freq = 1,
           colors=brewer.pal(8, "Dark2"))
 ```
 
-## Results
 
-This section presents the main results.
-
-### Data exploration
-
-The results section may have a data exploration part, but in general the structure here depends on the specific project.
-
-
-
-```{r}
-# What happens here depends on the specific project
-```
-
-### Analysis
-
-This section presents the main results, such as (for example) stats and graphs that show relationships, model results and/or clustering, PCA, etc.
+After the cleaning data, we create a term-document matrix (DTM) that represents the relationship between terms and documents, where each row stands for a term and each column for a document, and an entry is the number of occurrences of the term in the document. The matrix is created with the function DFM, which constructs a sparse document-feature matrix from the above corpus. The following steps are done with dfm_trim, dfm_select, and dfm_compress. The last functions allow us to estimate the frequencies of the words, select the features of interest, and post-recombine our DFM by identical dimension elements in their respective order. The DTM is the following:
 
 ```{r, warning=FALSE}
-corpus_sotu_proc <-  tokens_replace(corpus_sotu_proc, 
-                                    lemmaData$V1, 
-                                    lemmaData$V2,
-                                    valuetype = "fixed") 
-
-corpus_sotu_proc <- corpus_sotu_proc %>%
-  tokens_remove(stopwords("english")) %>%
-  tokens_ngrams(1)
 DTM <- dfm(corpus_sotu_proc)
 minimumFrequency <- 10
 DTM <- dfm_trim(DTM, 
@@ -156,10 +149,15 @@ DTM <- dfm_compress(DTM, "features")
 sel_idx <- rowSums(DTM) > 0
 DTM <- DTM[sel_idx, ]
 textdata <- data[sel_idx, ]
+dim(DTM)
+```
+
+```{r, warning=FALSE}
+
 
 model <- FitLdaModel(dtm = DTM,
                      k = 20,
-                     iterations = 200, # I usually recommend at least 500 iterations or more
+                     iterations = 200, 
                      burnin = 180,
                      alpha = 0.1,
                      beta = 0.05,
@@ -185,19 +183,14 @@ tmResult <- modeltools::posterior(topicModel)
 beta <- tmResult$terms
 
 theta <- tmResult$topics
-
-#terms(topicModel, 10)
 top5termsPerTopic <- terms(topicModel, 
                            5)
-# For the next steps, we want to give the topics more descriptive names 
-#than just numbers. Therefore, we simply concatenate the five most likely
-#terms of each topic to a string that represents a pseudo-name for each topic.
 topicNames <- apply(top5termsPerTopic, 
                     2, 
                     paste, 
                     collapse=" ")
-topicProportions <- colSums(theta) / nrow(DTM)  # average probability over all paragraphs
-names(topicProportions) <- topicNames     # Topic Names
+topicProportions <- colSums(theta) / nrow(DTM)
+names(topicProportions) <- topicNames     
 sort(topicProportions, decreasing = TRUE)
 attr(topicModel, "alpha") 
 topicModel2 <- LDA(DTM, 
@@ -205,29 +198,23 @@ topicModel2 <- LDA(DTM,
                    method="Gibbs", 
                    control=list(iter = 500, 
                                 verbose = 25, 
-                                alpha = 0.2))#replace alpha
-
+                                alpha = 0.2))
 tmResult <- modeltools::posterior(topicModel2)
 theta <- tmResult$topics
 beta <- tmResult$terms
-
-topicProportions <- colSums(theta) / nrow(DTM)  # average probability over all paragraphs
-names(topicProportions) <- topicNames     # Topic Names 
+topicProportions <- colSums(theta) / nrow(DTM)
+names(topicProportions) <- topicNames      
 sort(topicProportions, decreasing = TRUE) 
 topicNames <- apply(terms(topicModel2, 5), 2, paste, collapse = " ")
 exampleIds <- c(2, 100, 200)
 N <- length(exampleIds)
-
 topicProportionExamples <- as.tibble(theta) %>%
   slice(exampleIds)
-
 colnames(topicProportionExamples) <- topicNames
-
 vizDataFrame <- melt(cbind(data.frame(topicProportionExamples), 
                            document = factor(1:N)), 
                      variable.name = "topic", 
                      id.vars = "document")  
-
 ggplot(data = vizDataFrame, 
        aes(topic, value, 
            fill = document), 
@@ -238,7 +225,6 @@ ggplot(data = vizDataFrame,
   coord_flip() +
   facet_wrap(~ document, 
              ncol = N)
-
 ```
 
 ```{r}
