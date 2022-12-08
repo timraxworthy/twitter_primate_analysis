@@ -67,15 +67,14 @@ The data set is extracted from the social media Twitter through the function sea
 
 ```{r}
  Data.science <- search_tweets(
-   q = "monkey", # search for Tweets with "data" AND "science",
-   n = 1000 ,
+   q = "monkey", 
+   n = 4000 ,
    lang = "en"
  )
-# data = Data.science %>%
-#   select(full_text) %>%
-#   mutate(doc_id=seq(n())) %>%
-#   data.frame()
-data <- read.csv(file = "tweet.csv")
+data = Data.science %>%
+  select(full_text) %>%
+  mutate(doc_id=seq(n())) %>%
+  data.frame()
 summary(data)
 ```
 
@@ -151,10 +150,10 @@ DTM <- DTM[sel_idx, ]
 textdata <- data[sel_idx, ]
 dim(DTM)
 ```
+As we want to discover the topics that occur in the text corpus, we use a Latent Dirichlet allocation (LDA) as an approach used in topic modeling based on probabilistic vectors of words, which indicate their relevance to the text corpus.
 
+To estimate the log_likelihood estimator of the model, we use the Gibss simulation with 200 iterations, and we got that the parameter k  (number of topics) that best adjusts the model is ten.
 ```{r, warning=FALSE}
-
-
 model <- FitLdaModel(dtm = DTM,
                      k = 20,
                      iterations = 200, 
@@ -171,28 +170,29 @@ ggplot(model2,aes(x=iteration,y=log_likelihood))+
   geom_line()+
   geom_vline(xintercept = 10, col="red")+
   labs(title = "k = 10")
+```
+From the LDA model estimated above, we got by joining the five more relevant words in each topic and merging them by the point that king.force.kong.mountain.incredible, happy.tardis_monkey.birthday.day.lot and monday.island.now.thread.look are the most common text for the document created from the LDA model.
 
+```{r, warning=FALSE}
 K <- 10
-
-topicModel <- LDA(DTM, 
-                  K, 
-                  method="Gibbs", 
-                  control=list(iter = 500, 
+set.seed(1)
+topicModel <- LDA(DTM,
+                  K,
+                  method="Gibbs",
+                  control=list(iter = 500,
                                verbose = 25))
 tmResult <- modeltools::posterior(topicModel)
 beta <- tmResult$terms
 
 theta <- tmResult$topics
-top5termsPerTopic <- terms(topicModel, 
+top5termsPerTopic <- terms(topicModel,
                            5)
-topicNames <- apply(top5termsPerTopic, 
-                    2, 
-                    paste, 
+topicNames <- apply(top5termsPerTopic,
+                    2,
+                    paste,
                     collapse=" ")
 topicProportions <- colSums(theta) / nrow(DTM)
-names(topicProportions) <- topicNames     
-sort(topicProportions, decreasing = TRUE)
-attr(topicModel, "alpha") 
+names(topicProportions) <- topicNames
 topicModel2 <- LDA(DTM, 
                    K, 
                    method="Gibbs", 
@@ -204,7 +204,6 @@ theta <- tmResult$topics
 beta <- tmResult$terms
 topicProportions <- colSums(theta) / nrow(DTM)
 names(topicProportions) <- topicNames      
-sort(topicProportions, decreasing = TRUE) 
 topicNames <- apply(terms(topicModel2, 5), 2, paste, collapse = " ")
 exampleIds <- c(2, 100, 200)
 N <- length(exampleIds)
@@ -227,13 +226,6 @@ ggplot(data = vizDataFrame,
              ncol = N)
 ```
 
-```{r}
-# What happens here depends on the specific project
-```
-
-```{r}
-# What happens here depends on the specific project
-```
 
 ## Discussion
 
