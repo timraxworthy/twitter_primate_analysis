@@ -1,38 +1,47 @@
 ---
-title: "Fundamentals of Computing and Data Display"
-subtitle: "Term paper template"
+title: "Exploring Human-Primate Evolutionary Proximity with Twitter Data"
 author: "Tim Raxworthy & Carlos Cristiano"
 date: "`r Sys.Date()`"
 output:
   pdf_document:
     toc: yes
     df_print: kable
+  html_document:
+    toc: yes
+    df_print: paged
+subtitle: Term paper template
 references:
-- id: Wickham2014
-  title: Tidy Data
+- id: Marshall2016
+  title: Why conserve primates? In An Introduction to Primate Conservation
   author:
-  - family: Wickham
-    given: Hadley
-  container-title: Journal of Statistical Software
-  volume: 59
-  issue: 10
-  page: 1-23
-  type: article-journal
-  issued:
-    year: 2014
-- id: Baumer2017
-  title: Modern Data Science with R
-  author:
-  - family: Baumer
-    given: Benjamin S.
-  - family: Kaplan
-    given: Daniel T.
-  - family: Horton
-    given: Nicholas J.
+  - family: Marshall
+    given: Andrew J.
+  - family: Wich
+    given: Serge A.
+  page: "13-29"
   type: book
-  publisher: Chapman \& Hall/CRC Press.
+  container-title: Oxford Academic
+  issued:
+    year: 2016
+- id: Estrada2017
+  title: Impending extinction crisis of the world’s primates`:` Why primates matter
+  author:
+  - family: Estrada
+    given: Alejandro
+  - family: et al.
+  container-title: Science Advances
   issued:
     year: 2017
+- id: Inoue2007
+  title: Working memory of numerals in chimpanzees
+  author:
+  - family: Inoue
+    given: Sana
+  - family: Matsuzawa
+    given: Tetsuro
+  container-title: Current Biology
+  issued:
+    year: 2007
 ---
 
 
@@ -54,18 +63,18 @@ library(ggwordcloud)
 
 ## Introduction
 
-There are many factors that impact people’s decision making processes. Much is unknown as to how people formulate their decisions when choosing support for different conservation organizations that portray themselves to be following a mission statement agreeable to their own beliefs. One major question is, “Why do people select certain organizations over others to donate money to, participate in events, subscribe to newsletters, and read their online articles? Primates other than humans are a particularly important species for measuring concepts normally overlooked as having impact in how people formulate their support for organizations. Many conservation, biological and evolutionary scientists are keen on the acute impact that primates have on human society, their importance and their role in our society’s understanding of evolutionary concepts but what is not known is how current human interests surrounding primates could be influencing (directly or indirectly) our own way of designing conservation organizations. 
+  There are many factors that impact people’s decision making processes. Much is unknown as to how people formulate their decisions when choosing support for different conservation organizations that portray themselves to be following a mission statement agreeable to their own beliefs. One major question is, “Why do people select certain organizations over others to donate money to, participate in events, subscribe to newsletters, and read their online articles? Primates other than humans are a particularly important species for measuring concepts normally overlooked as having impact in how people formulate their support for organizations. Many conservation, biological and evolutionary scientists are keen on the acute impact that primates have on human society, their importance and their role in our society’s understanding of evolutionary concepts but what is not known is how current human interests surrounding primates could be influencing (directly or indirectly) our own way of designing conservation organizations. 
 
-This research aims at gaining some insight into how people view primates on social media. To do this we will be exploring and analyzing twitter data to create different topics related to our search terms (monkey, ape, chimp, primate etc.). This information will then be interpreted within the framework of what aspects of organizations that interact with primate species are "valued" or "normally expected" over others, although we are not comparing different organizations but rather different aspects surrounding a respondents current interest towards primate species. We will also compare if any of the "primate values" outlined in [@Marshall2016] overlap with the topics that our LDR model generates. 
+  This research aims at gaining some insight into how people view primates on social media. To do this we will be exploring and analyzing twitter data to create different topics related to our search terms (monkey, ape, chimp, primate etc.). This information will then be interpreted within the framework of what aspects of organizations that interact with primate species are "valued" or "normally expected" over others, although we are not comparing different organizations but rather different aspects surrounding a respondents current interest towards primate species. We will also compare if any of the "primate values" outlined in [@Marshall2016] overlap with the topics that our LDR model generates. 
 
 
-The fate of primate conservation has much do with human intervention whether that be positive or negative. Examining human interpretation of primates will be vital for those designing conservation projects currently and into the future. Primate conservation is valuable to humans for many different reasons, but a significant overarching reason is that primates are more similar to us than other orders of organisms on Earth. This similarity gives insight into our own species that no other animal can. It has been found that primates are excellent model animals for understanding physical and psychological illnesses that ail humans [@Estrada2017]. Primates also possess similar cognitive abilities to humans and some captive chimpanzees have displayed a working memory that rivals that of humans (Inoue, 2007). Chimpanzees use of tools could imply that they have an understanding of causation and posses exceptional problem solving skills (Whiter, 2011). These features demonstrate some of the similarities that other primate species share with humans. This study is an exploration into what kinds of public support for primate conservation are being discussed on internet forums such as twitter. To determine this, we are building a topic model that can help distinguish and categorize these different discussions, quantifying which ones are happening at the highest frequency across tweets.
+  The fate of primate conservation has much do with human intervention whether that be positive or negative. Examining human interpretation of primates will be vital for those designing conservation projects currently and into the future. Primate conservation is valuable to humans for many different reasons, but a significant overarching reason is that primates are more similar to us than other orders of organisms on Earth. This similarity gives insight into our own species that no other animal can. It has been found that primates are excellent model animals for understanding physical and psychological illnesses that ail humans [@Estrada2017]. Primates also possess similar cognitive abilities to humans and some captive chimpanzees have displayed a working memory that rivals that of humans [@Inoue2007]. These features demonstrate some of the similarities that other primate species share with humans. This study is an exploration into what kinds of public support for primate conservation are being discussed on internet forums such as twitter. To determine this, we are building a topic model that can help distinguish and categorize these different discussions, quantifying which ones are happening at the highest frequency across tweets.
 
 
 ## Data
-The data set is extracted from the social media Twitter through the function search_tweets from the package rtweet and then saved as a data frame object. The sample size for this study corresponds to four thousand tweets; the hashtag monkey was chosen as the query to be searched and used to filter and select tweets for this study. The last parameter considered for this sample is the language of the tweets, for this study we just consider tweets in english.
+The data set is extracted from the social media Twitter through the function search_tweets from the package rtweet and then saved as a data frame object. The sample size for this study corresponds to four thousand tweets; the hashtag monkey was chosen as the query to be searched and used to filter and select tweets for this study. The last parameter considered for this sample is the language of the tweets, for this study we just consider tweets in English.
 
-```{r}
+```{r eval=FALSE}
  Data.science <- search_tweets(
    q = "monkey", 
    n = 4000 ,
@@ -92,6 +101,9 @@ For this study, we generated a corpus to make the Document Term Matrix needed fo
 4. We grouped together the inflected forms of a word so they can be analysed as a single item, identified by the word's lemma, or dictionary form. To do the lematization we use baseform_en.tsv file, which provides the lemma of the words.
 
 ```{r, warning=FALSE}
+
+data <- read.csv("/Users/timra/Documents/twitter_primate_analysis/tweet.csv")
+
 corpus_sotu_orig <- corpus(data, 
                            docid_field = "doc_id",
                            text_field = "full_text")
@@ -228,8 +240,15 @@ ggplot(data = vizDataFrame,
 
 
 ## Discussion
+The topic models that we are generating have some interesting information to discuss, but first we should address the setbacks that come with examining this kind of information. The first topic is in French which indicates that perhaps there are many French users who are tweeting about the topics we are including in our model. Due to us using a .tsv file that is developed for the English language it restricts the text analysis to be English centered but it appears that there are tweets containing our search phrase happening in French. Also we have only included the term "monkey" to be searched in tweets which does not include all primate species like great apes and lemurs. It would be interesting to examine in the future if there are differences in the terms like "monkey" and "ape" when searching tweets and building a topic model.
 
-This section summarizes the results and may briefly outline advantages and limitations of the work presented.
+As far as topics that overlap with certain values held about primate species, there is one topic that has a relative high value in one of our documents that contains "elon", "neuralink" and "brain". This is interesting as primates are indicated in [@Marshall2016] as valued for being important research subjects. It appears that based on our topic model there is some evidence to support that people on twitter are discussing topics that relate to human evolutionary proximity to primates, albeit in an indirect way and relating to another business venture that Elon Musk is involved with. Neuralink has already been testing it's product on the Macaque monkey and it is unsure how ethical this practice is for the animals or what harm they may entail from this procedure leading to its plausibility of being an interesting topic to discuss with others.
+
+Our model has also split the word "musk" from "elon" and placed musk in a separate category with "trade", "island" and "secret". Perhaps this connects with illegal trading of monkeys or a more economically centered topic relating to monkeys. This has less to do with evolutionary proximity but relates monkeys to a generalized human understanding of exotic animal species being financially important due to large amounts of money some people may pay for them. This is definitely a plausible view to be held by people on social media who may perhaps be interested in monkeys as pets.
+
+Many of these topics are difficult to understand and perhaps this could be fixed through including more tweets. To continue examining this topic it would be a good idea to build a database containing many tweets over time with different search terms relating to other primate species evolutionary proximity to humans. Examining tweets containing the term monkey is not enough to fully conclude about how primate species are viewed by humans on social media although there is some evidence here that primate species are viewed by social media users based on their evolutionary proximity to humans.
+
+
 
 ## References
 
