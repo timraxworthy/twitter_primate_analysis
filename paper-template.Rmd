@@ -79,7 +79,7 @@ The data set is extracted from the social media Twitter through the function sea
 ```{r eval=FALSE}
  Data.science <- search_tweets(
    q = "monkey", 
-   n = 4000 ,
+   n = 2000 ,
    lang = "en"
  )
 data = Data.science %>%
@@ -138,7 +138,7 @@ cloud =lemmaData %>%
   arrange(desc(freq))
 cloud = cloud[1:200,]
 wordcloud(words = cloud$V2, freq = cloud$freq, min.freq = 1,
-          max.words=200, random.order=TRUE, rot.per=0.35, 
+          max.words=200, rot.per=0.35, 
           colors=brewer.pal(8, "Dark2"))
 ```
 
@@ -243,9 +243,9 @@ ggplot(data = vizDataFrame,
 
 ## Discussion
 
-The topic models that we are generating have some interesting information to discuss, but first we should address the setbacks that come with examining this kind of information. The first topic is in French which indicates that perhaps there are many French users who are tweeting about the topics we are including in our model. Due to us using a .tsv file that is developed for the English language it restricts the text analysis to be English centered but it appears that there are tweets containing our search phrase happening in French. Also we have only included the term "monkey" to be searched in tweets which does not include all primate species like great apes and lemurs. It would be interesting to examine in the future if there are differences in the terms like "monkey" and "ape" when searching tweets and building a topic model.
+The topic models that we are generating have some interesting information to discuss, but first we should address the setbacks that come with examining this kind of information. The first topic is in French which indicates that perhaps there are many French users who are tweeting about the topics we are including in our model. Due to us basing our topic model on the English language it makes this valid to include in our model. This is an indicator though that there are tweets containing our search phrase happening in French and perhaps this could be of interest in future text analyses. Also we have only included the term "monkey" to be searched in tweets which does not include all primate species like great apes and lemurs. It would be interesting to examine in the future if there are differences in the terms like "monkey" and "ape" when searching tweets and building a topic model.
 
-The word cloud visualization that we created has the words cancel, upgrade and fit as being the most prevalent and largest among all the words in our data set. This all seems to put monkeys into a mechanical purpose. Having these words be the most prevalent foreshadows what we find later with the topic model and gives us an impression that monkeys serve some kind of evaluative purpose for those who tweet on social media. The word kill is also included in this visualization which carries with it some disturbing implications when paired with monkey. These terms could be related to how monkeys are used in scientific experiments and the ethics behind it. 
+The word cloud visualization that we created has the words cancel, upgrade and fit as being the most prevalent and largest among all the words in our data set. This all seems to put monkeys into a mechanical purpose. Having these words be the most prevalent foreshadows what we find later with the topic model and gives us an impression that monkeys serve some kind of evaluative purpose for those who tweet on social media. The word kill is also included in this visualization which carries with it some disturbing implications when paired with monkey. These terms could be related to how monkeys are used in scientific experiments and the ethics behind it. One caveat with the word cloud is that when running the visualization you may encounter different words then the ones discussed in this paragraph.
 
 First we will discuss how the topic model overlaps with certain values held about primate species. There is one topic that has a relative high value in one of our documents that contains "elon", "neuralink" and "brain". This is interesting as primates are indicated in [@Marshall2016] as valued for being important research subjects. It appears that based on our topic model there is some evidence to support that people on twitter are discussing topics that relate to human evolutionary proximity to primates, albeit in an indirect way and relating to another business venture that Elon Musk is involved with. Neuralink has already been testing it's product on the Macaque monkey and it is unsure how ethical this practice is for the animals or what harm they may entail from this procedure leading to its plausibility of being an interesting topic to discuss with others.
 
